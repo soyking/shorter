@@ -1,8 +1,9 @@
 package storage
 
-import java.sql.DriverManager
+interface StorageDAO : AuthorDAO, SheetDAO
+
+var storageDAOImpl: StorageDAO? = null
 
 fun init() {
-    val connection = DriverManager
-            .getConnection("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter");
+    val storageDAOImpl = null
 }

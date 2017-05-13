@@ -1,12 +1,13 @@
 package storage
 
 class Author(
-        var id: String,
-        var createdAt: Int,
-        var name: String,
-        var key: String
+        var id: String? = null,
+        var createdAt: Long? = null,
+        var name: String? = null,
+        var key: String? = null
 )
 
 interface AuthorDAO {
-    fun getAuthor(id: String): Author
+    fun createAuthor(args: Map<String, Any>): Author?
+    fun getAuthor(id: String): Author?
 }
