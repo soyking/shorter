@@ -1,6 +1,9 @@
 package storage
 
-interface StorageDAO : AuthorDAO, SheetDAO
+abstract class StorageDAO : AuthorDAO, SheetDAO {
+    val TABLE_AUTHOR = "author"
+    val TABLE_SHEET = "sheet"
+}
 
 var storageDAOImpl: StorageDAO? = null
 

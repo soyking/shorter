@@ -3,7 +3,7 @@ package storage
 import java.sql.DriverManager
 import java.sql.Connection
 
-class MySQLStorageDAOImpl(url: String, username: String, password: String) : StorageDAO {
+class MySQLStorageDAOImpl(url: String, username: String, password: String) : StorageDAO() {
     var connection: Connection
 
     init {
@@ -12,8 +12,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
     }
 
     override fun createAuthor(args: Map<String, Any>): Author? {
-        println("in create author" + args["name"])
-        val name = args["name"] as String? ?: return null
+        val name = args["name"] as? String ?: return null
 
         val author = Author(
                 id = getUUID(),
@@ -23,7 +22,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         )
 
         val pstmt = connection.prepareStatement(
-                "insert into author values (?, ?, ?, ?)"
+                "insert into " + this.TABLE_AUTHOR + " values (?, ?, ?, ?)"
         )
         pstmt.setString(1, author.id)
         pstmt.setString(2, author.name)
@@ -36,7 +35,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
 
     override fun getAuthor(id: String): Author? {
         val stmt = connection.createStatement()
-        val sql = "SELECT name FROM author"
+        val sql = "SELECT name FROM " + this.TABLE_AUTHOR
         val rs = stmt.executeQuery(sql)
 
         if (rs.next()) {
