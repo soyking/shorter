@@ -34,13 +34,19 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
     }
 
     override fun getAuthor(id: String): Author? {
-        val stmt = connection.createStatement()
-        val sql = "SELECT name FROM " + this.TABLE_AUTHOR
-        val rs = stmt.executeQuery(sql)
+        val pstmt = connection.prepareStatement(
+                "select * from " + this.TABLE_AUTHOR + " where id=?"
+        )
+        pstmt.setString(1, id)
+        val rs = pstmt.executeQuery()
 
         if (rs.next()) {
-            val name = rs.getString("name")
-            return Author(name = name)
+            return Author(
+                    id = rs.getString("id"),
+                    name = rs.getString("name"),
+                    createdAt = rs.getLong("created_at"),
+                    key = rs.getString("key")
+            )
         }
 
         return null

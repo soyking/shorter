@@ -32,4 +32,14 @@ class MySQLStorageDAOImplTest {
         assert(impl!!.createAuthor(args) == null)
     }
 
+    @Test
+    fun getAuthor() {
+        assert(impl!!.getAuthor("not_exist") == null) // not exist
+
+        val author = impl!!.createAuthor(mapOf("name" to "test_author"))
+        val author_ = impl!!.getAuthor(author!!.id)
+        assert(author.name == author_!!.name)
+        assert(author.createdAt == author_.createdAt)
+        assert(author.key == author_.key)
+    }
 }
