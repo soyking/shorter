@@ -2,9 +2,9 @@ package storage
 
 class Author(
     var id: String,
-    var createdAt: Long,
+    var createdAt: Long? = null,
     var name: String,
-    var key: String
+    var key: String? = null
 )
 
 interface AuthorDAO {

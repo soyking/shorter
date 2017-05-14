@@ -97,9 +97,9 @@ class MySQLStorageDAOImplTest {
         }
 
         assert(impl!!.getSheets(mapOf("id" to sheetList.first().id))!!.size == 1)
-        assert(impl!!.getSheets(mapOf("pages" to 1, "count" to 4))!!.size == 4)
+        assert(impl!!.getSheets(mapOf("pages" to "1", "count" to "4"))!!.size == 4)
 
-        val sheets = impl!!.getSheets(mapOf("pages" to 2, "count" to 5))
+        val sheets = impl!!.getSheets(mapOf("pages" to "2", "count" to "5"))
         assert(sheets!!.size == 5)
         // order by created_at desc
         assert(sheets.last().id == sheetList.first().id)

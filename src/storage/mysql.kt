@@ -29,7 +29,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         )
         pstmt.setString(1, author.id)
         pstmt.setString(2, author.name)
-        pstmt.setLong(3, author.createdAt)
+        pstmt.setLong(3, author.createdAt!!)
         pstmt.setString(4, author.key)
         pstmt.executeUpdate()
         pstmt.close()
@@ -63,7 +63,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         val text = args["text"] as? String ?: return null
         val link = args["link"] as? String
         val authorID = args["author"] as? String ?: return null
-        getAuthor(authorID) ?: return null
+        val author = getAuthor(authorID) ?: return null
 
         // valid sheet type
         val type: SheetType
@@ -79,7 +79,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         val sheet = Sheet(
             id = getUUID(),
             createdAt = System.currentTimeMillis(),
-            author = authorID,
+            author = author,
             type = type,
             text = text,
             link = link
@@ -91,7 +91,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         )
         pstmt.setString(1, sheet.id)
         pstmt.setLong(2, sheet.createdAt)
-        pstmt.setString(3, sheet.author)
+        pstmt.setString(3, authorID)
         pstmt.setString(4, sheet.type.toString())
         pstmt.setString(5, sheet.text)
         pstmt.setString(6, sheet.link)
@@ -110,7 +110,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
                 Sheet(
                     id = rs.getString("id"),
                     createdAt = rs.getLong("created_at"),
-                    author = rs.getString("author"),
+                    author = Author(id = rs.getString("author"), name = rs.getString("name")),
                     type = type,
                     text = rs.getString("text"),
                     link = rs.getString("link")
@@ -126,7 +126,9 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         val pstmt: PreparedStatement
         if (sheetID != null) {
             pstmt = connection.prepareStatement(
-                "select * from $TABLE_SHEET where id=?"
+                "select $TABLE_SHEET.*, $TABLE_AUTHOR.name " +
+                    "from $TABLE_SHEET join $TABLE_AUTHOR ON $TABLE_SHEET.author=$TABLE_AUTHOR.id " +
+                    "where $TABLE_SHEET.id=?"
             )
             pstmt.setString(1, sheetID)
             rs = pstmt.executeQuery()
@@ -136,7 +138,9 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
             val offset = (pages - 1) * count
 
             pstmt = connection.prepareStatement(
-                "select * from $TABLE_SHEET order by created_at desc limit ?, ?"
+                "select $TABLE_SHEET.*, $TABLE_AUTHOR.name " +
+                    "from $TABLE_SHEET join $TABLE_AUTHOR ON $TABLE_SHEET.author=$TABLE_AUTHOR.id " +
+                    "order by created_at desc limit ?, ?"
             )
             pstmt.setInt(1, offset)
             pstmt.setInt(2, count)
