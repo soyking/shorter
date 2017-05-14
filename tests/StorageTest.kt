@@ -60,9 +60,9 @@ class MySQLStorageDAOImplTest {
 
     fun _createSheet(author: Author?): Pair<MutableMap<String, Any>, Sheet?> {
         val args = mutableMapOf<String, Any>(
-                "author" to author!!.id,
-                "type" to SheetType.TEXT.toString(),
-                "text" to "some_text"
+            "author" to author!!.id,
+            "type" to SheetType.TEXT.toString(),
+            "text" to "some_text"
         )
         val sheet = impl!!.createSheet(args)
         return Pair(args, sheet)

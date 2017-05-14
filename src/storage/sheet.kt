@@ -5,12 +5,12 @@ enum class SheetType {
 }
 
 class Sheet(
-        var id: String,
-        var createdAt: Long,
-        var author: String,
-        var type: SheetType,
-        var text: String,
-        var link: String?
+    var id: String,
+    var createdAt: Long,
+    var author: String,
+    var type: SheetType,
+    var text: String,
+    var link: String?
 )
 
 interface SheetDAO {

@@ -10,22 +10,22 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
 
     init {
         connection = DriverManager
-                .getConnection(url, username, password)
+            .getConnection(url, username, password)
     }
 
     override fun createAuthor(args: Map<String, Any>): Author? {
         val name = args["name"] as? String ?: return null
 
         val author = Author(
-                id = getUUID(),
-                name = name,
-                createdAt = System.currentTimeMillis(),
-                key = getUUID()
+            id = getUUID(),
+            name = name,
+            createdAt = System.currentTimeMillis(),
+            key = getUUID()
         )
 
         val pstmt = connection.prepareStatement(
-                "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`) " +
-                        "values (?, ?, ?, ?)"
+            "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`) " +
+                "values (?, ?, ?, ?)"
         )
         pstmt.setString(1, author.id)
         pstmt.setString(2, author.name)
@@ -39,7 +39,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
 
     override fun getAuthor(id: String): Author? {
         val pstmt = connection.prepareStatement(
-                "select * from $TABLE_AUTHOR where id=?"
+            "select * from $TABLE_AUTHOR where id=?"
         )
         pstmt.setString(1, id)
         val rs = pstmt.executeQuery()
@@ -47,10 +47,10 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         var author: Author? = null
         if (rs.next()) {
             author = Author(
-                    id = rs.getString("id"),
-                    name = rs.getString("name"),
-                    createdAt = rs.getLong("created_at"),
-                    key = rs.getString("key")
+                id = rs.getString("id"),
+                name = rs.getString("name"),
+                createdAt = rs.getLong("created_at"),
+                key = rs.getString("key")
             )
         }
 
@@ -77,17 +77,17 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         }
 
         val sheet = Sheet(
-                id = getUUID(),
-                createdAt = System.currentTimeMillis(),
-                author = authorID,
-                type = type,
-                text = text,
-                link = link
+            id = getUUID(),
+            createdAt = System.currentTimeMillis(),
+            author = authorID,
+            type = type,
+            text = text,
+            link = link
         )
 
         val pstmt = connection.prepareStatement(
-                "insert into " + TABLE_SHEET + " (id, created_at, author, type, text, link) " +
-                        "values (?, ?, ?, ?, ?, ?)"
+            "insert into " + TABLE_SHEET + " (id, created_at, author, type, text, link) " +
+                "values (?, ?, ?, ?, ?, ?)"
         )
         pstmt.setString(1, sheet.id)
         pstmt.setLong(2, sheet.createdAt)
@@ -107,36 +107,36 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
             val typeString = rs.getString("type")
             val type = SheetType.valueOf(typeString)
             sheetList.add(
-                    Sheet(
-                            id = rs.getString("id"),
-                            createdAt = rs.getLong("created_at"),
-                            author = rs.getString("author"),
-                            type = type,
-                            text = rs.getString("text"),
-                            link = rs.getString("link")
-                    )
+                Sheet(
+                    id = rs.getString("id"),
+                    createdAt = rs.getLong("created_at"),
+                    author = rs.getString("author"),
+                    type = type,
+                    text = rs.getString("text"),
+                    link = rs.getString("link")
+                )
             )
         }
         return sheetList
     }
 
     override fun getSheets(args: Map<String, Any>): ArrayList<Sheet>? {
-        val sheetID = args["id"] as String?
+        val sheetID = args["id"] as? String
         val rs: ResultSet
         val pstmt: PreparedStatement
         if (sheetID != null) {
             pstmt = connection.prepareStatement(
-                    "select * from $TABLE_SHEET where id=?"
+                "select * from $TABLE_SHEET where id=?"
             )
             pstmt.setString(1, sheetID)
             rs = pstmt.executeQuery()
         } else {
-            val pages = args["pages"] as Int? ?: return null
-            val count = args["count"] as Int? ?: return null
+            val pages = (args["pages"] as? String)?.toInt() ?: 1
+            val count = (args["count"] as? String)?.toInt() ?: 10
             val offset = (pages - 1) * count
 
             pstmt = connection.prepareStatement(
-                    "select * from $TABLE_SHEET order by created_at desc limit ?, ?"
+                "select * from $TABLE_SHEET order by created_at desc limit ?, ?"
             )
             pstmt.setInt(1, offset)
             pstmt.setInt(2, count)
