@@ -15,6 +15,5 @@ class Sheet(
 
 interface SheetDAO {
     fun createSheet(args: Map<String, Any>): Sheet?
-    fun getSheets(pages: Int, count: Int): Array<Sheet>?
-    fun getSheet(id: String): Sheet?
+    fun getSheets(args: Map<String, Any>): ArrayList<Sheet>?
 }

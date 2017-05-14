@@ -2,6 +2,8 @@ package storage
 
 import java.sql.DriverManager
 import java.sql.Connection
+import java.sql.PreparedStatement
+import java.sql.ResultSet
 
 class MySQLStorageDAOImpl(url: String, username: String, password: String) : StorageDAO() {
     var connection: Connection
@@ -22,7 +24,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         )
 
         val pstmt = connection.prepareStatement(
-                "insert into " + this.TABLE_AUTHOR + " (id, name, created_at, `key`) " +
+                "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`) " +
                         "values (?, ?, ?, ?)"
         )
         pstmt.setString(1, author.id)
@@ -37,7 +39,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
 
     override fun getAuthor(id: String): Author? {
         val pstmt = connection.prepareStatement(
-                "select * from " + this.TABLE_AUTHOR + " where id=?"
+                "select * from $TABLE_AUTHOR where id=?"
         )
         pstmt.setString(1, id)
         val rs = pstmt.executeQuery()
@@ -61,7 +63,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         val text = args["text"] as? String ?: return null
         val link = args["link"] as? String
         val authorID = args["author"] as? String ?: return null
-        this.getAuthor(authorID) ?: return null
+        getAuthor(authorID) ?: return null
 
         // valid sheet type
         val type: SheetType
@@ -84,7 +86,7 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         )
 
         val pstmt = connection.prepareStatement(
-                "insert into " + this.TABLE_SHEET + " (id, created_at, author, type, text, link) " +
+                "insert into " + TABLE_SHEET + " (id, created_at, author, type, text, link) " +
                         "values (?, ?, ?, ?, ?, ?)"
         )
         pstmt.setString(1, sheet.id)
@@ -94,17 +96,55 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
         pstmt.setString(5, sheet.text)
         pstmt.setString(6, sheet.link)
         pstmt.executeUpdate()
+        pstmt.close()
 
         return sheet
     }
 
-    override fun getSheets(pages: Int, count: Int): Array<Sheet> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun getSheetsResult(rs: ResultSet): ArrayList<Sheet>? {
+        val sheetList = ArrayList<Sheet>()
+        while (rs.next()) {
+            val typeString = rs.getString("type")
+            val type = SheetType.valueOf(typeString)
+            sheetList.add(
+                    Sheet(
+                            id = rs.getString("id"),
+                            createdAt = rs.getLong("created_at"),
+                            author = rs.getString("author"),
+                            type = type,
+                            text = rs.getString("text"),
+                            link = rs.getString("link")
+                    )
+            )
+        }
+        return sheetList
     }
 
-    override fun getSheet(id: String): Sheet {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getSheets(args: Map<String, Any>): ArrayList<Sheet>? {
+        val sheetID = args["id"] as String?
+        val rs: ResultSet
+        val pstmt: PreparedStatement
+        if (sheetID != null) {
+            pstmt = connection.prepareStatement(
+                    "select * from $TABLE_SHEET where id=?"
+            )
+            pstmt.setString(1, sheetID)
+            rs = pstmt.executeQuery()
+        } else {
+            val pages = args["pages"] as Int? ?: return null
+            val count = args["count"] as Int? ?: return null
+            val offset = (pages - 1) * count
+
+            pstmt = connection.prepareStatement(
+                    "select * from $TABLE_SHEET order by created_at desc limit ?, ?"
+            )
+            pstmt.setInt(1, offset)
+            pstmt.setInt(2, count)
+            rs = pstmt.executeQuery()
+        }
+
+        val result = getSheetsResult(rs)
+        pstmt.close()
+        return result
     }
-
-
 }
