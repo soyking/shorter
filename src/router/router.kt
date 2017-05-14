@@ -1,8 +1,8 @@
 package router
 
 import com.google.gson.Gson
-import spark.Spark.path
-import spark.Spark.get
+import spark.Service
+import spark.Spark.*
 import storage.MySQLStorageDAOImpl
 import java.util.*
 
@@ -20,6 +20,7 @@ fun init(props: Properties) {
     )
 
 
+    port(props.getProperty("port", Service.SPARK_DEFAULT_PORT.toString()).toInt())
     path("/api") {
         get("/ping", { req, res -> "pong" }, ::jsonTransformer)
     }
