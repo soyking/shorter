@@ -2,6 +2,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import storage.MySQLStorageDAOImpl
+import storage.SheetType
 
 
 class MySQLStorageDAOImplTest {
@@ -15,7 +16,7 @@ class MySQLStorageDAOImplTest {
     @After
     fun clear() {
         val connection = impl!!.connection
-        for (tb in arrayOf(impl!!.TABLE_AUTHOR, impl!!.TABLE_SHEET)) {
+        for (tb in arrayOf(impl!!.TABLE_SHEET, impl!!.TABLE_AUTHOR)) {
             val stmt = connection.createStatement()
             val query = "delete from " + tb
             stmt.executeUpdate(query)
@@ -41,5 +42,24 @@ class MySQLStorageDAOImplTest {
         assert(author.name == author_!!.name)
         assert(author.createdAt == author_.createdAt)
         assert(author.key == author_.key)
+    }
+
+    @Test
+    fun createSheet() {
+        val author = impl!!.createAuthor(mapOf("name" to "test_author"))!!
+        val args = mutableMapOf<String, Any>(
+                "author" to author.id,
+                "type" to SheetType.TEXT.toString(),
+                "text" to "some_text"
+        )
+        assert(impl!!.createSheet(args) != null)
+
+        args["type"] = SheetType.LINK.toString()
+        assert(impl!!.createSheet(args) == null) // no link
+        args["link"] = "http://test.com"
+        assert(impl!!.createSheet(args) != null)
+
+        args["type"] = "not_exist_type"
+        assert(impl!!.createSheet(args) == null) // invalid type
     }
 }

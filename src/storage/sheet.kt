@@ -1,12 +1,16 @@
 package storage
 
+enum class SheetType {
+    TEXT, LINK
+}
+
 class Sheet(
         var id: String,
         var createdAt: Long,
-        var author: Int,
-        var type: String,
+        var author: String,
+        var type: SheetType,
         var text: String,
-        var link: String
+        var link: String?
 )
 
 interface SheetDAO {
