@@ -30,8 +30,8 @@ fun init(props: Properties) {
 class CommonResponse(var err: String = "", var data: Any? = null)
 
 fun handle(storageDAO: StorageDAO, handler: (Request, StorageDAO) -> Any): Route {
-    return Route { req, res ->
-        var result: Any? = null
+    return Route { req, _ ->
+        val result: Any?
         try {
             result = handler(req, storageDAO)
         } catch (e: Exception) {

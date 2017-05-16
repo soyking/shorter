@@ -1,17 +1,10 @@
 package storage
 
-import java.sql.DriverManager
-import java.sql.Connection
-import java.sql.PreparedStatement
-import java.sql.ResultSet
+import java.sql.*
 
-class MySQLStorageDAOImpl(url: String, username: String, password: String) : StorageDAO() {
-    var connection: Connection
-
-    init {
-        connection = DriverManager
-            .getConnection(url, username, password)
-    }
+class MySQLStorageDAOImpl(val url: String, val username: String, val password: String) : StorageDAO() {
+    var connection: Connection = DriverManager
+        .getConnection(url, username, password)
 
     override fun createAuthor(args: Map<String, Any>): Author? {
         val name = args["name"] as? String ?: return null
@@ -20,17 +13,19 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
             id = getUUID(),
             name = name,
             createdAt = System.currentTimeMillis(),
-            key = getUUID()
+            key = getUUID(),
+            secret = getUUID()
         )
 
         val pstmt = connection.prepareStatement(
-            "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`) " +
-                "values (?, ?, ?, ?)"
+            "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`, secret) " +
+                "values (?, ?, ?, ?, ?)"
         )
         pstmt.setString(1, author.id)
         pstmt.setString(2, author.name)
         pstmt.setLong(3, author.createdAt!!)
         pstmt.setString(4, author.key)
+        pstmt.setString(5, author.secret)
         pstmt.executeUpdate()
         pstmt.close()
 
@@ -50,7 +45,8 @@ class MySQLStorageDAOImpl(url: String, username: String, password: String) : Sto
                 id = rs.getString("id"),
                 name = rs.getString("name"),
                 createdAt = rs.getLong("created_at"),
-                key = rs.getString("key")
+                key = rs.getString("key"),
+                secret = rs.getString("secret")
             )
         }
 

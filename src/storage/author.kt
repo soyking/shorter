@@ -4,7 +4,8 @@ class Author(
     var id: String,
     var createdAt: Long? = null,
     var name: String,
-    var key: String? = null
+    var key: String? = null,
+    var secret: String? = null
 )
 
 interface AuthorDAO {
