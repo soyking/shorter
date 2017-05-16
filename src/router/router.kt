@@ -3,6 +3,7 @@ package router
 import com.google.gson.Gson
 import spark.*
 import spark.Spark.*
+import storage.MyBatisStorageDAOImpl
 import storage.MySQLStorageDAOImpl
 import storage.StorageDAO
 import java.util.*
@@ -13,10 +14,8 @@ val jsonTransformer = ResponseTransformer { model ->
 }
 
 fun init(props: Properties) {
-    val storageDAOImpl = MySQLStorageDAOImpl(
-        props.getProperty("db_url"),
-        props.getProperty("db_user"),
-        props.getProperty("db_password")
+    val storageDAOImpl = MyBatisStorageDAOImpl(
+        props.getProperty("mybatis_config")
     )
 
 

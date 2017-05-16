@@ -1,10 +1,7 @@
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import storage.Author
-import storage.MySQLStorageDAOImpl
-import storage.Sheet
-import storage.SheetType
+import storage.*
 
 
 class MySQLStorageDAOImplTest {
@@ -103,5 +100,31 @@ class MySQLStorageDAOImplTest {
         assert(sheets!!.size == 5)
         // order by created_at desc
         assert(sheets.last().id == sheetList.first().id)
+    }
+}
+
+class MybatisStorageDAOImplTest {
+    var impl: MyBatisStorageDAOImpl? = null
+
+    @Before
+    fun connect() {
+        impl = MyBatisStorageDAOImpl("src/conf/mybatis/mybatis.xml")
+    }
+
+    @After
+    fun clear() {
+
+    }
+
+    @Test
+    fun getAuthor() {
+        // not exist
+        assert(impl!!.getAuthor("not_exist") == null)
+
+        val author = impl!!.createAuthor(mapOf("name" to "test_author"))
+        val author_ = impl!!.getAuthor(author!!.id)
+        assert(author.name == author_!!.name)
+        assert(author.createdAt == author_.createdAt)
+        assert(author.key == author_.key)
     }
 }
