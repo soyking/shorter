@@ -15,7 +15,7 @@ val jsonTransformer = ResponseTransformer { model ->
 
 fun init(props: Properties) {
     val storageDAOImpl = MyBatisStorageDAOImpl(
-        props.getProperty("mybatis_config")
+        "mybatis/mybatis.xml"
     )
 
 

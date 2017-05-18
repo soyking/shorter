@@ -1,9 +1,9 @@
 package storage
 
 class Author(
-    var id: String,
+    var id: String? = null,
     var createdAt: Long? = null,
-    var name: String,
+    var name: String? = null,
     var key: String? = null,
     var secret: String? = null
 )

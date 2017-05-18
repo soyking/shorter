@@ -4,8 +4,9 @@ plugins {
 }
 
 sourceSets {
-    main.kotlin.srcDirs += 'src/'
-    test.kotlin.srcDirs += 'tests/'
+    main.kotlin.srcDirs += "src/"
+    main.resources.srcDirs += "src/conf"
+    test.kotlin.srcDirs += "tests/"
 }
 
 mainClassName = "MainKt"

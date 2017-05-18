@@ -1,19 +1,15 @@
 package storage
 
+import org.apache.ibatis.io.Resources
 import org.apache.ibatis.session.SqlSessionFactory
 import org.apache.ibatis.session.SqlSessionFactoryBuilder
-import java.io.FileInputStream
-import java.io.File
-
-
 
 
 class MyBatisStorageDAOImpl(configPath: String) : StorageDAO() {
     val sqlSessionFactory: SqlSessionFactory
 
     init {
-        val file = File(configPath)
-        val inputStream = FileInputStream(file)
+        val inputStream = Resources.getResourceAsStream(configPath);
         sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
     }
 

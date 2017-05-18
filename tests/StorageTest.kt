@@ -49,7 +49,7 @@ class MySQLStorageDAOImplTest {
         assert(impl!!.getAuthor("not_exist") == null)
 
         val author = impl!!.createAuthor(mapOf("name" to "test_author"))
-        val author_ = impl!!.getAuthor(author!!.id)
+        val author_ = impl!!.getAuthor(author!!.id!!)
         assert(author.name == author_!!.name)
         assert(author.createdAt == author_.createdAt)
         assert(author.key == author_.key)
@@ -57,7 +57,7 @@ class MySQLStorageDAOImplTest {
 
     fun _createSheet(author: Author?): Pair<MutableMap<String, Any>, Sheet?> {
         val args = mutableMapOf<String, Any>(
-            "author" to author!!.id,
+            "author" to author!!.id!!,
             "type" to SheetType.TEXT.toString(),
             "text" to "some_text"
         )
@@ -108,7 +108,7 @@ class MybatisStorageDAOImplTest {
 
     @Before
     fun connect() {
-        impl = MyBatisStorageDAOImpl("src/conf/mybatis/mybatis.xml")
+        impl = MyBatisStorageDAOImpl("mybatis/mybatis.xml")
     }
 
     @After
@@ -121,10 +121,7 @@ class MybatisStorageDAOImplTest {
         // not exist
         assert(impl!!.getAuthor("not_exist") == null)
 
-        val author = impl!!.createAuthor(mapOf("name" to "test_author"))
-        val author_ = impl!!.getAuthor(author!!.id)
-        assert(author.name == author_!!.name)
-        assert(author.createdAt == author_.createdAt)
-        assert(author.key == author_.key)
+        val author_ = impl!!.getAuthor("test")
+        println(author_!!.key)
     }
 }
