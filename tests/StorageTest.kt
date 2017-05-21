@@ -71,9 +71,9 @@ abstract class AbstractStorageDAOImplTest {
         }
 
         assert(impl!!.getSheets(mapOf("id" to sheetList.first()))!!.size == 1)
-        assert(impl!!.getSheets(mapOf("pages" to "1", "count" to "4"))!!.size == 4)
+        assert(impl!!.getSheets(mapOf("offset" to 0, "count" to 4))!!.size == 4)
 
-        val sheets = impl!!.getSheets(mapOf("pages" to "2", "count" to "5"))
+        val sheets = impl!!.getSheets(mapOf("offset" to 5, "count" to 5))
         assert(sheets!!.size == 5)
         // order by created_at desc
         assert(sheets.last().id == sheetList.first())
