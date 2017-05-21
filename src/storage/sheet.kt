@@ -7,13 +7,21 @@ enum class SheetType {
 class Sheet(
     var id: String,
     var createdAt: Long,
-    var author: Author,
+    var author: String,
     var type: SheetType,
     var text: String,
     var link: String?
 )
 
 interface SheetDAO {
-    fun createSheet(args: Map<String, Any>): Sheet?
+    fun createSheet(
+        id: String,
+        createdAt: Long,
+        author: String,
+        type: SheetType,
+        text: String,
+        link: String
+    )
+
     fun getSheets(args: Map<String, Any>): ArrayList<Sheet>?
 }

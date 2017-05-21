@@ -13,11 +13,11 @@ class MyBatisStorageDAOImpl(configPath: String) : StorageDAO() {
         sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
     }
 
-    override fun createAuthor(args: Map<String, Any>): Author? {
+    override fun createAuthor(id: String, createdAt: Long, name: String, key: String, secret: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createSheet(args: Map<String, Any>): Sheet? {
+    override fun createSheet(id: String, createdAt: Long, author: String, type: SheetType, text: String, link: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

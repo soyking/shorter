@@ -6,30 +6,18 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
     var connection: Connection = DriverManager
         .getConnection(url, username, password)
 
-    override fun createAuthor(args: Map<String, Any>): Author? {
-        val name = args["name"] as? String ?: return null
-
-        val author = Author(
-            id = getUUID(),
-            name = name,
-            createdAt = System.currentTimeMillis(),
-            key = getUUID(),
-            secret = getUUID()
-        )
-
+    override fun createAuthor(id: String, createdAt: Long, name: String, key: String, secret: String) {
         val pstmt = connection.prepareStatement(
             "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`, secret) " +
                 "values (?, ?, ?, ?, ?)"
         )
-        pstmt.setString(1, author.id)
-        pstmt.setString(2, author.name)
-        pstmt.setLong(3, author.createdAt!!)
-        pstmt.setString(4, author.key)
-        pstmt.setString(5, author.secret)
+        pstmt.setString(1, id)
+        pstmt.setString(2, name)
+        pstmt.setLong(3, createdAt)
+        pstmt.setString(4, key)
+        pstmt.setString(5, secret)
         pstmt.executeUpdate()
         pstmt.close()
-
-        return author
     }
 
     override fun getAuthor(id: String): Author? {
@@ -54,47 +42,19 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
         return author
     }
 
-    override fun createSheet(args: Map<String, Any>): Sheet? {
-        val typeString = args["type"] as? String ?: return null
-        val text = args["text"] as? String ?: return null
-        val link = args["link"] as? String
-        val authorID = args["author"] as? String ?: return null
-        val author = getAuthor(authorID) ?: return null
-
-        // valid sheet type
-        val type: SheetType
-        try {
-            type = SheetType.valueOf(typeString)
-            if (type == SheetType.LINK && link == null) {
-                return null
-            }
-        } catch (_: IllegalArgumentException) {
-            return null
-        }
-
-        val sheet = Sheet(
-            id = getUUID(),
-            createdAt = System.currentTimeMillis(),
-            author = author,
-            type = type,
-            text = text,
-            link = link
-        )
-
+    override fun createSheet(id: String, createdAt: Long, author: String, type: SheetType, text: String, link: String) {
         val pstmt = connection.prepareStatement(
             "insert into " + TABLE_SHEET + " (id, created_at, author, type, text, link) " +
                 "values (?, ?, ?, ?, ?, ?)"
         )
-        pstmt.setString(1, sheet.id)
-        pstmt.setLong(2, sheet.createdAt)
-        pstmt.setString(3, authorID)
-        pstmt.setString(4, sheet.type.toString())
-        pstmt.setString(5, sheet.text)
-        pstmt.setString(6, sheet.link)
+        pstmt.setString(1, id)
+        pstmt.setLong(2, createdAt)
+        pstmt.setString(3, author)
+        pstmt.setString(4, type.toString())
+        pstmt.setString(5, text)
+        pstmt.setString(6, link)
         pstmt.executeUpdate()
         pstmt.close()
-
-        return sheet
     }
 
     private fun getSheetsResult(rs: ResultSet): ArrayList<Sheet>? {
@@ -106,7 +66,7 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
                 Sheet(
                     id = rs.getString("id"),
                     createdAt = rs.getLong("created_at"),
-                    author = Author(id = rs.getString("author"), name = rs.getString("name")),
+                    author = rs.getString("author"),
                     type = type,
                     text = rs.getString("text"),
                     link = rs.getString("link")

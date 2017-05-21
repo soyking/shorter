@@ -7,6 +7,14 @@ import storage.*
 class MySQLStorageDAOImplTest {
     var impl: MySQLStorageDAOImpl? = null
 
+    val authorName = "authorName"
+    val authorKey = "authorKey"
+    val authorSecret = "authorSecret"
+
+    val sheetType = SheetType.TEXT
+    val sheetText = "sheetText"
+    val sheetLink = "sheetLink"
+
     @Before
     fun connect() {
         impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
@@ -22,25 +30,16 @@ class MySQLStorageDAOImplTest {
         }
     }
 
-    fun _createAuthor(): Pair<MutableMap<String, Any>, Author?> {
-        val args = mutableMapOf<String, Any>("name" to "test_author")
-        val author = impl!!.createAuthor(args)
-        return Pair(args, author)
-    }
-
-    @Test
-    fun createAuthor() {
-        val result = _createAuthor()
-        val args = result.first
-        assert(result.second != null)
-
-        // invalid name
-        args["name"] = 1
-        assert(impl!!.createAuthor(args) == null)
-
-        // without name
-        args.remove("name")
-        assert(impl!!.createAuthor(args) == null)
+    fun _createAuthor(): String {
+        val id = getUUID()
+        impl!!.createAuthor(
+            id = id,
+            name = authorName,
+            createdAt = System.currentTimeMillis(),
+            key = authorKey,
+            secret = authorSecret
+        )
+        return id
     }
 
     @Test
@@ -48,58 +47,43 @@ class MySQLStorageDAOImplTest {
         // not exist
         assert(impl!!.getAuthor("not_exist") == null)
 
-        val author = impl!!.createAuthor(mapOf("name" to "test_author"))
-        val author_ = impl!!.getAuthor(author!!.id!!)
-        assert(author.name == author_!!.name)
-        assert(author.createdAt == author_.createdAt)
-        assert(author.key == author_.key)
+        val authorID = _createAuthor()
+        val author = impl!!.getAuthor(authorID)
+        assert(author!!.name == authorName)
+        assert(author.key == authorKey)
+        assert(author.secret == authorSecret)
     }
 
-    fun _createSheet(author: Author?): Pair<MutableMap<String, Any>, Sheet?> {
-        val args = mutableMapOf<String, Any>(
-            "author" to author!!.id!!,
-            "type" to SheetType.TEXT.toString(),
-            "text" to "some_text"
+    fun _createSheet(authorID: String): String {
+        val id = getUUID()
+        impl!!.createSheet(
+            id = id,
+            createdAt = System.currentTimeMillis(),
+            author = authorID,
+            type = sheetType,
+            text = sheetText,
+            link = sheetLink
         )
-        val sheet = impl!!.createSheet(args)
-        return Pair(args, sheet)
-    }
-
-    @Test
-    fun createSheet() {
-        val author = _createAuthor().second
-        val result = _createSheet(author)
-        val args = result.first
-
-        assert(result.second != null)
-
-        // no link
-        args["type"] = SheetType.LINK.toString()
-        assert(impl!!.createSheet(args) == null)
-        args["link"] = "http://test.com"
-        assert(impl!!.createSheet(args) != null)
-
-        args["type"] = "not_exist_type"
-        assert(impl!!.createSheet(args) == null) // invalid type
+        return id
     }
 
     @Test
     fun getSheets() {
         assert(impl!!.getSheets(mapOf("id" to "not_exist"))!!.isEmpty())
 
-        val sheetList = ArrayList<Sheet>()
-        val author = _createAuthor().second
+        val authorID = _createAuthor()
+        val sheetList = ArrayList<String>()
         for (i in 1..10) {
-            sheetList.add(_createSheet(author).second!!)
+            sheetList.add(_createSheet(authorID))
         }
 
-        assert(impl!!.getSheets(mapOf("id" to sheetList.first().id))!!.size == 1)
+        assert(impl!!.getSheets(mapOf("id" to sheetList.first()))!!.size == 1)
         assert(impl!!.getSheets(mapOf("pages" to "1", "count" to "4"))!!.size == 4)
 
         val sheets = impl!!.getSheets(mapOf("pages" to "2", "count" to "5"))
         assert(sheets!!.size == 5)
         // order by created_at desc
-        assert(sheets.last().id == sheetList.first().id)
+        assert(sheets.last().id == sheetList.first())
     }
 }
 
