@@ -48,12 +48,14 @@ abstract class AbstractStorageDAOImplTest {
     fun _createSheet(authorID: String): String {
         val id = getUUID()
         impl!!.createSheet(
-            id = id,
-            createdAt = System.currentTimeMillis(),
-            author = authorID,
-            type = sheetType,
-            text = sheetText,
-            link = sheetLink
+            mapOf(
+                "id" to id,
+                "created_at" to System.currentTimeMillis(),
+                "author" to authorID,
+                "type" to sheetType.toString(),
+                "text" to sheetText,
+                "link" to sheetLink
+            )
         )
         return id
     }
