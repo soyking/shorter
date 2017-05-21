@@ -16,20 +16,19 @@ abstract class AbstractStorageDAOImplTest {
     val sheetText = "sheetText"
     val sheetLink = "sheetLink"
 
-    @Before
     abstract fun connect()
-
-    @After
     abstract fun clear()
 
     fun _createAuthor(): String {
         val id = getUUID()
         impl!!.createAuthor(
-            id = id,
-            name = authorName,
-            createdAt = System.currentTimeMillis(),
-            key = authorKey,
-            secret = authorSecret
+            mapOf(
+                "id" to id,
+                "name" to authorName,
+                "created_at" to System.currentTimeMillis(),
+                "key" to authorKey,
+                "secret" to authorSecret
+            )
         )
         return id
     }

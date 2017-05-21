@@ -9,13 +9,6 @@ class Author(
 )
 
 interface AuthorDAO {
-    fun createAuthor(
-        id: String,
-        createdAt: Long,
-        name: String,
-        key: String,
-        secret: String
-    )
-
+    fun createAuthor(params: Map<String, Any>)
     fun getAuthor(id: String): Author?
 }

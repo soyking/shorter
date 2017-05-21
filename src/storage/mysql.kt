@@ -6,16 +6,16 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
     var connection: Connection = DriverManager
         .getConnection(url, username, password)
 
-    override fun createAuthor(id: String, createdAt: Long, name: String, key: String, secret: String) {
+    override fun createAuthor(params: Map<String, Any>) {
         val pstmt = connection.prepareStatement(
             "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`, secret) " +
                 "values (?, ?, ?, ?, ?)"
         )
-        pstmt.setString(1, id)
-        pstmt.setString(2, name)
-        pstmt.setLong(3, createdAt)
-        pstmt.setString(4, key)
-        pstmt.setString(5, secret)
+        pstmt.setString(1, params["id"] as String)
+        pstmt.setString(2, params["name"] as String)
+        pstmt.setLong(3, params["created_at"] as Long)
+        pstmt.setString(4, params["key"] as String)
+        pstmt.setString(5, params["secret"] as String)
         pstmt.executeUpdate()
         pstmt.close()
     }
