@@ -2,10 +2,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import storage.*
+import java.sql.Connection
 
 
-class MySQLStorageDAOImplTest {
-    var impl: MySQLStorageDAOImpl? = null
+abstract class AbstractStorageDAOImplTest {
+    var impl: StorageDAO? = null
 
     val authorName = "authorName"
     val authorKey = "authorKey"
@@ -16,19 +17,10 @@ class MySQLStorageDAOImplTest {
     val sheetLink = "sheetLink"
 
     @Before
-    fun connect() {
-        impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
-    }
+    abstract fun connect()
 
     @After
-    fun clear() {
-        val connection = impl!!.connection
-        for (tb in arrayOf(impl!!.TABLE_SHEET, impl!!.TABLE_AUTHOR)) {
-            val stmt = connection.createStatement()
-            val query = "delete from " + tb
-            stmt.executeUpdate(query)
-        }
-    }
+    abstract fun clear()
 
     fun _createAuthor(): String {
         val id = getUUID()
@@ -84,6 +76,27 @@ class MySQLStorageDAOImplTest {
         assert(sheets!!.size == 5)
         // order by created_at desc
         assert(sheets.last().id == sheetList.first())
+    }
+}
+
+class MySQLStorageDAOImplTest : AbstractStorageDAOImplTest() {
+    var connection: Connection? = null
+
+    @Before
+    override fun connect() {
+        val _impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
+        connection = _impl.connection
+        impl = _impl
+    }
+
+    @After
+    override fun clear() {
+        val connection = connection
+        for (tb in arrayOf(impl!!.TABLE_SHEET, impl!!.TABLE_AUTHOR)) {
+            val stmt = connection!!.createStatement()
+            val query = "delete from " + tb
+            stmt.executeUpdate(query)
+        }
     }
 }
 
