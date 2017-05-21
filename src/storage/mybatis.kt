@@ -31,11 +31,20 @@ class MyBatisStorageDAOImpl(configPath: String) : StorageDAO {
         }
     }
 
-    override fun createSheet(id: String, createdAt: Long, author: String, type: SheetType, text: String, link: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun createSheet(params: Map<String, Any>) {
+        val session = sqlSessionFactory.openSession()
+        session.use { session ->
+            val authorMapper = session.getMapper(StorageDAO::class.java)
+            authorMapper.createSheet(params)
+            session.commit()
+        }
     }
 
-    override fun getSheets(args: Map<String, Any>): ArrayList<Sheet>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getSheets(params: Map<String, Any>): ArrayList<Sheet>? {
+        val session = sqlSessionFactory.openSession()
+        session.use { session ->
+            val authorMapper = session.getMapper(StorageDAO::class.java)
+            return authorMapper.getSheets(params)
+        }
     }
 }

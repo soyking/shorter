@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="storage.StorageDAO">
+    <insert id="createSheet" parameterType="map">
+        insert into sheet (id, created_at, author, type, text, link) values (
+        #{id}, #{created_at}, #{author}, #{type}, #{text}, #{link})
+    </insert>
+    <select id="getSheets" parameterType="map" resultType="storage.Sheet">
+        select * from sheet
+        <if test="id != null">
+            where id = #{id}
+        </if>
+        <if test="id == null">
+            order by created_at desc limit #{offset}, #{count}
+        </if>
+    </select>
+</mapper>
