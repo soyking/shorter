@@ -78,46 +78,30 @@ abstract class AbstractStorageDAOImplTest {
     }
 }
 
-class MySQLStorageDAOImplTest : AbstractStorageDAOImplTest() {
-    var connection: Connection? = null
+open class MySQLStorageDAOImplTest : AbstractStorageDAOImplTest() {
+    var _impl: MySQLStorageDAOImpl? = null
 
     @Before
     override fun connect() {
-        val _impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
-        connection = _impl.connection
+        _impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
         impl = _impl
     }
 
     @After
     override fun clear() {
-        val connection = connection
-        for (tb in arrayOf(impl!!.TABLE_SHEET, impl!!.TABLE_AUTHOR)) {
-            val stmt = connection!!.createStatement()
+        for (tb in arrayOf(_impl!!.TABLE_SHEET, _impl!!.TABLE_AUTHOR)) {
+            val stmt = _impl!!.connection.createStatement()
             val query = "delete from " + tb
             stmt.executeUpdate(query)
         }
     }
 }
 
-class MybatisStorageDAOImplTest {
-    var impl: MyBatisStorageDAOImpl? = null
-
+class MybatisStorageDAOImplTest : MySQLStorageDAOImplTest() {
     @Before
-    fun connect() {
+    override fun connect() {
+        // no raw sql execution, shame on mybatis
+        super.connect()
         impl = MyBatisStorageDAOImpl("mybatis/mybatis.xml")
-    }
-
-    @After
-    fun clear() {
-
-    }
-
-    @Test
-    fun getAuthor() {
-        // not exist
-        assert(impl!!.getAuthor("not_exist") == null)
-
-        val author_ = impl!!.getAuthor("test")
-        println(author_!!.key)
     }
 }

@@ -2,8 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="storage.AuthorDAO">
-    <select id="getAuthor" resultType="storage.Author">
+<mapper namespace="storage.StorageDAO">
+    <insert id="createAuthor" parameterType="map">
+        insert into author (id, name, created_at, `key`, secret) values (
+        #{id}, #{name}, #{created_at}, #{key}, #{secret})
+    </insert>
+    <select id="getAuthor" parameterType="string" resultType="storage.Author">
         select * from author where id = #{id}
     </select>
 </mapper>

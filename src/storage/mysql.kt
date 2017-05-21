@@ -2,9 +2,11 @@ package storage
 
 import java.sql.*
 
-class MySQLStorageDAOImpl(val url: String, val username: String, val password: String) : StorageDAO() {
+class MySQLStorageDAOImpl(val url: String, val username: String, val password: String) : StorageDAO {
     var connection: Connection = DriverManager
         .getConnection(url, username, password)
+    val TABLE_AUTHOR = "author"
+    val TABLE_SHEET = "sheet"
 
     override fun createAuthor(params: Map<String, Any>) {
         val pstmt = connection.prepareStatement(
