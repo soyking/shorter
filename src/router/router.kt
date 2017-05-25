@@ -3,9 +3,6 @@ package router
 import com.google.gson.Gson
 import spark.*
 import spark.Spark.*
-import storage.MyBatisStorageDAOImpl
-import storage.MySQLStorageDAOImpl
-import storage.StorageDAO
 import java.util.*
 
 val gson = Gson()
@@ -14,25 +11,20 @@ val jsonTransformer = ResponseTransformer { model ->
 }
 
 fun init(props: Properties) {
-    val storageDAOImpl = MyBatisStorageDAOImpl(
-        "mybatis/mybatis.xml"
-    )
-
-
     port(props.getProperty("port", Service.SPARK_DEFAULT_PORT.toString()).toInt())
     path("/api") {
-        get("/sheet", handle(storageDAOImpl, ::getSheets), jsonTransformer)
-        post("/sheet", handle(storageDAOImpl, ::createSheet), jsonTransformer)
+        get("/sheet", handle(::getSheets), jsonTransformer)
+        post("/sheet", handle(::createSheet), jsonTransformer)
     }
 }
 
 class CommonResponse(var err: String = "", var data: Any? = null)
 
-fun handle(storageDAO: StorageDAO, handler: (Request, StorageDAO) -> Any): Route {
+fun handle(handler: (Request) -> Any): Route {
     return Route { req, _ ->
         val result: Any?
         try {
-            result = handler(req, storageDAO)
+            result = handler(req)
         } catch (e: Exception) {
             println(e)
             return@Route CommonResponse("internal-error")

@@ -4,10 +4,10 @@ import spark.Request
 import storage.StorageDAO
 
 
-fun createSheet(req: Request, storage: StorageDAO): Any {
+fun createSheet(req: Request): Any {
     return "done"
 }
 
-fun getSheets(req: Request, storage: StorageDAO): Any {
+fun getSheets(req: Request): Any {
     return "done"
 }
