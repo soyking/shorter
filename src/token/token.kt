@@ -1,33 +1,7 @@
-package router
+package token
 
 import storage.Author
 import storage.storageDAO
-
-interface Assembler {
-    fun combine(parts: List<String?>): String
-    fun extract(text: String): List<String>
-}
-
-class SplitAssembler : Assembler {
-    val SEPARATOR = "|"
-
-    override fun combine(parts: List<String?>): String {
-        return parts.joinToString(separator = SEPARATOR)
-    }
-
-    override fun extract(text: String): List<String> {
-        return text.split(delimiters = SEPARATOR)
-    }
-}
-
-interface Cipher {
-    fun encrypt(plainText: String): String
-    fun decrypt(cipherText: String): String
-}
-
-interface CipherFactory {
-    fun create(key: String): Cipher
-}
 
 class TokenInfo(val author: Author, val createdAt: Long, val count: Int)
 
@@ -59,7 +33,7 @@ class TokenService(val key: String, val cipherFactory: CipherFactory, val assemb
 
     fun extract(token: String): TokenInfo? {
         val parts = assembler.extract(firstClassCipher.decrypt(token))
-        if (parts.size != FIRST_CLASS_CONTENT_LENGTH) {
+        if (parts == null || parts.size != FIRST_CLASS_CONTENT_LENGTH) {
             return null
         }
 
@@ -70,7 +44,7 @@ class TokenService(val key: String, val cipherFactory: CipherFactory, val assemb
         val secondClassCipher = cipherFactory.create(author.key!!)
 
         val subParts = assembler.extract(secondClassCipher.decrypt(subToken))
-        if (subParts.size != SECOND_CLASS_CONTENT_LENGTH) {
+        if (subParts == null || subParts.size != SECOND_CLASS_CONTENT_LENGTH) {
             return null
         }
 
