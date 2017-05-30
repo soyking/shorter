@@ -1,6 +1,9 @@
 package storage
 
-import java.sql.*
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.PreparedStatement
+import java.sql.ResultSet
 
 class MySQLStorageDAOImpl(val url: String, val username: String, val password: String) : StorageDAO {
     var connection: Connection = DriverManager
@@ -46,8 +49,8 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
 
     override fun createSheet(params: Map<String, Any>) {
         val pstmt = connection.prepareStatement(
-            "insert into " + TABLE_SHEET + " (id, created_at, author, type, text, link) " +
-                "values (?, ?, ?, ?, ?, ?)"
+            "insert into " + TABLE_SHEET + " (id, created_at, author, type, text, link, token) " +
+                "values (?, ?, ?, ?, ?, ?, ?)"
         )
         pstmt.setString(1, params["id"] as String)
         pstmt.setLong(2, params["created_at"] as Long)
@@ -55,6 +58,7 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
         pstmt.setString(4, params["type"] as String)
         pstmt.setString(5, params["text"] as String)
         pstmt.setString(6, params["link"] as String)
+        pstmt.setString(7, params["token"] as String)
         pstmt.executeUpdate()
         pstmt.close()
     }
@@ -71,7 +75,8 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
                     author = rs.getString("author"),
                     type = type,
                     text = rs.getString("text"),
-                    link = rs.getString("link")
+                    link = rs.getString("link"),
+                    token = rs.getString("token")
                 )
             )
         }
@@ -80,13 +85,20 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
 
     override fun getSheets(params: Map<String, Any>): ArrayList<Sheet>? {
         val sheetID = params["id"] as? String
+        val token = params["token"] as? String
         val rs: ResultSet
         val pstmt: PreparedStatement
         if (sheetID != null) {
             pstmt = connection.prepareStatement(
-                "select * from $TABLE_SHEET where $TABLE_SHEET.id=?"
+                "select * from $TABLE_SHEET where id=?"
             )
             pstmt.setString(1, sheetID)
+            rs = pstmt.executeQuery()
+        } else if (token != null) {
+            pstmt = connection.prepareStatement(
+                "select * from $TABLE_SHEET where token=?"
+            )
+            pstmt.setString(1, token)
             rs = pstmt.executeQuery()
         } else {
             val offset = anyToInt(params["offset"], 1)

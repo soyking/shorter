@@ -4,16 +4,21 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="storage.StorageDAO">
     <insert id="createSheet" parameterType="map">
-        insert into sheet (id, created_at, author, type, text, link) values (
-        #{id}, #{created_at}, #{author}, #{type}, #{text}, #{link})
+        insert into sheet (id, created_at, author, type, text, link, token) values (
+        #{id}, #{created_at}, #{author}, #{type}, #{text}, #{link}, #{token})
     </insert>
     <select id="getSheets" parameterType="map" resultType="storage.Sheet">
         select * from sheet
-        <if test="id != null">
-            where id = #{id}
-        </if>
-        <if test="id == null">
-            order by created_at desc limit #{offset}, #{count}
-        </if>
+        <choose>
+            <when test="id != null">
+                where id = #{id}
+            </when>
+            <when test="token != null">
+                where token = #{token}
+            </when>
+            <otherwise>
+                order by created_at desc limit #{offset}, #{count}
+            </otherwise>
+        </choose>
     </select>
 </mapper>

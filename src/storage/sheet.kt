@@ -10,20 +10,24 @@ class Sheet(
     var author: String?,
     var type: SheetType?,
     var text: String?,
-    var link: String?
+    var link: String?,
+    var token: String?
 ) {
     constructor(id: String?,
                 createdAt: Long?,
                 author: String?,
                 type: String?,
                 text: String?,
-                link: String?) : this(
+                link: String?,
+                token: String?) : this(
         id = id,
         createdAt = createdAt,
         author = author,
         type = SheetType.valueOf(type!!),
         text = text,
-        link = link)
+        link = link,
+        token = token
+    )
 }
 
 interface SheetDAO {

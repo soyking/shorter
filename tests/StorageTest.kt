@@ -2,7 +2,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import storage.*
-import java.sql.Connection
 
 
 abstract class AbstractStorageDAOImplTest {
@@ -45,8 +44,9 @@ abstract class AbstractStorageDAOImplTest {
         assert(author.secret == authorSecret)
     }
 
-    fun _createSheet(authorID: String): String {
+    fun _createSheet(authorID: String): Pair<String, String> {
         val id = getUUID()
+        val token = getUUID()
         impl!!.createSheet(
             mapOf(
                 "id" to id,
@@ -54,29 +54,32 @@ abstract class AbstractStorageDAOImplTest {
                 "author" to authorID,
                 "type" to sheetType.toString(),
                 "text" to sheetText,
-                "link" to sheetLink
+                "link" to sheetLink,
+                "token" to token
             )
         )
-        return id
+        return Pair(id, token)
     }
 
     @Test
     fun getSheets() {
         assert(impl!!.getSheets(mapOf("id" to "not_exist"))!!.isEmpty())
+        assert(impl!!.getSheets(mapOf("token" to "not_exist"))!!.isEmpty())
 
         val authorID = _createAuthor()
-        val sheetList = ArrayList<String>()
+        val sheetList = ArrayList<Pair<String, String>>()
         for (i in 1..10) {
             sheetList.add(_createSheet(authorID))
         }
 
-        assert(impl!!.getSheets(mapOf("id" to sheetList.first()))!!.size == 1)
+        assert(impl!!.getSheets(mapOf("id" to sheetList.first().first))!!.size == 1)
+        assert(impl!!.getSheets(mapOf("token" to sheetList.first().second))!!.size == 1)
         assert(impl!!.getSheets(mapOf("offset" to 0, "count" to 4))!!.size == 4)
 
         val sheets = impl!!.getSheets(mapOf("offset" to 5, "count" to 5))
         assert(sheets!!.size == 5)
         // order by created_at desc
-        assert(sheets.last().id == sheetList.first())
+        assert(sheets.last().id == sheetList.first().first)
     }
 }
 
