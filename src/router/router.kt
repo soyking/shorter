@@ -16,18 +16,24 @@ val jsonTransformer = ResponseTransformer { model ->
 fun init(props: Properties) {
     port(props.getProperty("port", Service.SPARK_DEFAULT_PORT.toString()).toInt())
     path("/api") {
+        post("/author", handle(::createAuthor), jsonTransformer)
+
         get("/sheet", handle(::getSheets), jsonTransformer)
         post("/sheet", handle(::createSheet), jsonTransformer)
     }
 }
 
-class CommonResponse(var err: String = "", var data: Any? = null)
+class APIException(val err: String) : Exception(err)
 
-fun handle(handler: (Request) -> Any): Route {
+data class CommonResponse(var err: String = "", var data: Any? = null)
+
+fun handle(handler: (Request) -> Any?): Route {
     return Route { req, _ ->
         val result: Any?
         try {
             result = handler(req)
+        } catch (e: APIException) {
+            return@Route CommonResponse(e.err)
         } catch (e: Exception) {
             println(e)
             return@Route CommonResponse("internal-error")

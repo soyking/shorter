@@ -20,7 +20,7 @@ interface CipherFactory {
  * initVector: 128 bit
  */
 class AESCipher(key: String, initVector: String) : Cipher {
-    companion object :CipherFactory {
+    companion object : CipherFactory {
         override fun create(key: String, initVector: String): Cipher {
             return AESCipher(key, initVector)
         }

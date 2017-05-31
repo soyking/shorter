@@ -2,11 +2,10 @@ package router
 
 import spark.Request
 
-
-fun createSheet(req: Request): Any {
+fun createSheet(req: Request): Any? {
     return "done"
 }
 
-fun getSheets(req: Request): Any {
+fun getSheets(req: Request): Any? {
     return "done"
 }
