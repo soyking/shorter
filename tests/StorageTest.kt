@@ -8,7 +8,7 @@ abstract class AbstractStorageDAOImplTest {
     var impl: StorageDAO? = null
 
     val authorName = "authorName"
-    val authorKey = "authorKey"
+    val authorKey = randomString(16)
     val authorSecret = "authorSecret"
 
     val sheetType = SheetType.TEXT
