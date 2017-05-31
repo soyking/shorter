@@ -7,12 +7,12 @@ import javax.crypto.spec.SecretKeySpec
 import javax.crypto.Cipher as javaCipher
 
 interface Cipher {
-    fun encrypt(plainText: String): String?
-    fun decrypt(cipherText: String): String?
+    fun encrypt(plainText: String?): String?
+    fun decrypt(cipherText: String?): String?
 }
 
 interface CipherFactory {
-    fun create(key: String): Cipher
+    fun create(key: String, initVector: String): Cipher
 }
 
 /**
@@ -20,6 +20,12 @@ interface CipherFactory {
  * initVector: 128 bit
  */
 class AESCipher(key: String, initVector: String) : Cipher {
+    companion object :CipherFactory {
+        override fun create(key: String, initVector: String): Cipher {
+            return AESCipher(key, initVector)
+        }
+    }
+
     private val encryptCipher: javaCipher
     private val decryptCipher: javaCipher
 
@@ -32,15 +38,15 @@ class AESCipher(key: String, initVector: String) : Cipher {
         decryptCipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, iv)
     }
 
-    override fun encrypt(plainText: String): String? {
+    override fun encrypt(plainText: String?): String? {
         try {
-            return String(Base64.getEncoder().encode(encryptCipher.doFinal(plainText.toByteArray())))
+            return String(Base64.getEncoder().encode(encryptCipher.doFinal(plainText?.toByteArray())))
         } catch (e: Exception) {
             return null
         }
     }
 
-    override fun decrypt(cipherText: String): String? {
+    override fun decrypt(cipherText: String?): String? {
         try {
             return String(decryptCipher.doFinal(Base64.getDecoder().decode(cipherText)))
         } catch (e: Exception) {

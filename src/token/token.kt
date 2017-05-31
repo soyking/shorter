@@ -5,14 +5,15 @@ import storage.storageDAO
 
 class TokenInfo(val author: Author, val createdAt: Long, val count: Int)
 
-class TokenService(val key: String, val cipherFactory: CipherFactory, val assembler: Assembler) {
+class TokenService(key: String, val initVector: String,
+                   val cipherFactory: CipherFactory, val assembler: Assembler) {
     private val FIRST_CLASS_CONTENT_LENGTH = 2
     private val SECOND_CLASS_CONTENT_LENGTH = 3
-    private val firstClassCipher = cipherFactory.create(key)
+    private val firstClassCipher = cipherFactory.create(key, initVector)
 
     fun generate(tokenInfo: TokenInfo): String? {
         val author = tokenInfo.author
-        val secondClassCipher = cipherFactory.create(author.key!!)
+        val secondClassCipher = cipherFactory.create(author.key!!, initVector)
 
         val subToken = secondClassCipher.encrypt(
             assembler.combine(listOf(
@@ -41,7 +42,7 @@ class TokenService(val key: String, val cipherFactory: CipherFactory, val assemb
         val subToken = parts[1]
 
         val author = storageDAO.getAuthor(authorID) ?: return null
-        val secondClassCipher = cipherFactory.create(author.key!!)
+        val secondClassCipher = cipherFactory.create(author.key!!, initVector)
 
         val subParts = assembler.extract(secondClassCipher.decrypt(subToken))
         if (subParts == null || subParts.size != SECOND_CLASS_CONTENT_LENGTH) {
