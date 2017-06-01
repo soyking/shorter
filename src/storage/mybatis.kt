@@ -13,7 +13,7 @@ class MyBatisStorageDAOImpl(configPath: String) : StorageDAO {
         sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
     }
 
-    override fun createAuthor(params: Map<String, Any>) {
+    override fun createAuthor(params: Map<String, Any?>) {
         val session = sqlSessionFactory.openSession()
         session.use { session ->
             val authorMapper = session.getMapper(StorageDAO::class.java)

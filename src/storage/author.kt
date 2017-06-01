@@ -9,6 +9,6 @@ class Author(
 )
 
 interface AuthorDAO {
-    fun createAuthor(params: Map<String, Any>)
+    fun createAuthor(params: Map<String, Any?>)
     fun getAuthor(id: String): Author?
 }

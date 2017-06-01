@@ -11,7 +11,7 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
     val TABLE_AUTHOR = "author"
     val TABLE_SHEET = "sheet"
 
-    override fun createAuthor(params: Map<String, Any>) {
+    override fun createAuthor(params: Map<String, Any?>) {
         val pstmt = connection.prepareStatement(
             "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`, secret) " +
                 "values (?, ?, ?, ?, ?)"
