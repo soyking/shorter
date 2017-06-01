@@ -3,24 +3,38 @@ package router
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException
 import org.apache.ibatis.exceptions.PersistenceException
 import spark.Request
+import storage.Author
 import storage.storageDAO
+import token.TokenInfo
+import token.tokenService
 
 fun createAuthor(req: Request): Any? {
-    val requestMap = gson.fromJson(req.body(), HashMap<String, Any>().javaClass)
-    requestMap["id"] = getUUID()
-    requestMap["created_at"] = System.currentTimeMillis()
-    requestMap["key"] = getKey()
-    requestMap["secret"] = getUUID()
+    val author = gson.fromJson(req.body(), Author::class.java)
+    author.id = getUUID()
+    author.createdAt = System.currentTimeMillis()
+    author.key = getKey()
+    author.secret = getUUID()
 
     try {
-        storageDAO.createAuthor(requestMap)
+        storageDAO.createAuthor(mapOf(
+            "id" to author.id,
+            "name" to author.name,
+            "created_at" to author.createdAt,
+            "key" to author.key,
+            "secret" to author.secret
+        ))
     } catch (e: PersistenceException) {
         if (e.cause is MySQLIntegrityConstraintViolationException) {
-            return "duplicate author name"
+            throw APIException("duplicate author name")
         } else {
             throw e
         }
     }
 
-    return null
+    val tokenInfo = TokenInfo(
+        author = author,
+        count = 0
+    )
+
+    return tokenService?.generate(tokenInfo)
 }

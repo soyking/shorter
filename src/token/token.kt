@@ -3,7 +3,7 @@ package token
 import storage.Author
 import storage.storageDAO
 
-class TokenInfo(val author: Author, val createdAt: Long, val count: Int)
+class TokenInfo(val author: Author, val createdAt: Long = 0, val count: Int)
 
 class TokenService(key: String, val initVector: String,
                    val cipherFactory: CipherFactory, val assembler: Assembler) {
@@ -59,4 +59,15 @@ class TokenService(key: String, val initVector: String,
 
         return TokenInfo(author = author, createdAt = createdAt, count = count)
     }
+}
+
+var tokenService: TokenService? = null
+
+fun init(key: String, initVector: String) {
+    tokenService = TokenService(
+        key = key,
+        initVector = initVector,
+        cipherFactory = AESCipher,
+        assembler = SplitAssembler()
+    )
 }
