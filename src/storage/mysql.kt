@@ -101,7 +101,7 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
             pstmt.setString(1, token)
             rs = pstmt.executeQuery()
         } else {
-            val offset = anyToInt(params["offset"], 1)
+            val offset = anyToInt(params["offset"], 0)
             val count = anyToInt(params["count"], 10)
 
             pstmt = connection.prepareStatement(

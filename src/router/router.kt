@@ -34,6 +34,8 @@ fun handle(handler: (Request) -> Any?): Route {
             CommonResponse(data = handler(req))
         } catch (e: APIException) {
             return@Route CommonResponse(e.err)
+        } catch (e: java.lang.NullPointerException) {
+            return@Route CommonResponse("params missing")
         } catch (e: Exception) {
             println(e)
             return@Route CommonResponse("internal-error")
