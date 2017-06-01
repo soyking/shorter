@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `shorter`.`sheet` (
   `type` VARCHAR(32) NOT NULL,
   `text` TEXT(1024) NOT NULL,
   `link` TEXT(1024) NULL,
-  `token` VARCHAR(256) NOT NULL,
+  `token` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `created_at` (`created_at` ASC),
