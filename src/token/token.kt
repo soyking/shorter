@@ -2,11 +2,13 @@ package token
 
 import storage.Author
 import storage.storageDAO
+import java.util.*
 
-class TokenInfo(val author: Author, val createdAt: Long = 0, val count: Int)
+class TokenInfo(val author: Author, var createdAt: Long = 0, var count: Int)
 
 class TokenService(key: String, val initVector: String,
-                   val cipherFactory: CipherFactory, val assembler: Assembler) {
+                   val cipherFactory: CipherFactory, val assembler: Assembler,
+                   val maxSheets: Int) {
     private val FIRST_CLASS_CONTENT_LENGTH = 2
     private val SECOND_CLASS_CONTENT_LENGTH = 3
     private val firstClassCipher = cipherFactory.create(key, initVector)
@@ -59,15 +61,43 @@ class TokenService(key: String, val initVector: String,
 
         return TokenInfo(author = author, createdAt = createdAt, count = count)
     }
+
+    private fun isCreatedInToday(createdAt: Long): Boolean {
+        val now = Calendar.getInstance()
+        val created = Calendar.getInstance()
+        created.timeInMillis = createdAt
+
+        return (now.get(Calendar.YEAR) == created.get(Calendar.YEAR)
+            && now.get(Calendar.DAY_OF_YEAR) == created.get(Calendar.DAY_OF_YEAR))
+    }
+
+    // return true when not exceed max number of sheets
+    fun checkTokenInfo(tokenInfo: TokenInfo): Boolean {
+        return (!(isCreatedInToday(tokenInfo.createdAt) && tokenInfo.count >= maxSheets))
+    }
+
+    fun regenTokenInfo(tokenInfo: TokenInfo): String? {
+        if (isCreatedInToday(tokenInfo.createdAt)) {
+            tokenInfo.count += 1
+        } else {
+            tokenInfo.count = 0
+        }
+        tokenInfo.createdAt = System.currentTimeMillis()
+        return generate(tokenInfo)
+    }
 }
 
 var tokenService: TokenService? = null
 
-fun init(key: String, initVector: String) {
+fun init(key: String, initVector: String, _maxSheets: Any?) {
+    val maxSheets = _maxSheets as? Int ?: 3
+    println(maxSheets)
+
     tokenService = TokenService(
         key = key,
         initVector = initVector,
         cipherFactory = AESCipher,
-        assembler = SplitAssembler()
+        assembler = SplitAssembler(),
+        maxSheets = maxSheets
     )
 }

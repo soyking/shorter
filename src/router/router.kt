@@ -1,21 +1,21 @@
 package router
 
 import com.google.gson.Gson
+import props
 import spark.Request
 import spark.ResponseTransformer
 import spark.Route
 import spark.Service
 import spark.Spark.*
-import java.util.*
 
 val gson = Gson()
 val jsonTransformer = ResponseTransformer { model ->
     gson.toJson(model)
 }
 
-fun init(props: Properties) {
+fun init() {
     port(props.getProperty("port", Service.SPARK_DEFAULT_PORT.toString()).toInt())
-    token.init(props.getProperty("key"), props.getProperty("init_vector"))
+    token.init(props.getProperty("key"), props.getProperty("init_vector"), props["max_sheets"])
     path("/api") {
         post("/author", handle(::createAuthor), jsonTransformer)
 

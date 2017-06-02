@@ -29,7 +29,8 @@ class CipherTest {
             key = key,
             initVector = initVector,
             cipherFactory = AESCipher,
-            assembler = SplitAssembler()
+            assembler = SplitAssembler(),
+            maxSheets = 3
         )
 
         val author = Author(
@@ -40,7 +41,7 @@ class CipherTest {
             secret = "secrect_key"
         )
         // dirty patch
-        storageDAO = object :StorageDAO{
+        storageDAO = object : StorageDAO {
             override fun createAuthor(params: Map<String, Any?>) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
@@ -49,7 +50,7 @@ class CipherTest {
                 return author
             }
 
-            override fun createSheet(params: Map<String, Any>) {
+            override fun createSheet(params: Map<String, Any?>) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
@@ -64,5 +65,11 @@ class CipherTest {
         println("token: " + token)
         val _tokenInfo = service.extract(token)
         assert(tokenInfo.count == _tokenInfo!!.count)
+
+        assert(service.checkTokenInfo(tokenInfo))
+        tokenInfo.count = 3
+        assert(!service.checkTokenInfo(tokenInfo))
+        tokenInfo.createdAt -= 60000 * 60 * 24
+        assert(service.checkTokenInfo(tokenInfo))
     }
 }
