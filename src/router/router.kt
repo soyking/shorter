@@ -1,6 +1,6 @@
 package router
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import props
 import spark.Request
 import spark.ResponseTransformer
@@ -8,7 +8,8 @@ import spark.Route
 import spark.Service
 import spark.Spark.*
 
-val gson = Gson()
+
+val gson = GsonBuilder().disableHtmlEscaping().create();
 val jsonTransformer = ResponseTransformer { model ->
     gson.toJson(model)
 }
