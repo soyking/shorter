@@ -47,7 +47,7 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
         return author
     }
 
-    override fun createSheet(params: Map<String, Any>) {
+    override fun createSheet(params: Map<String, Any?>) {
         val pstmt = connection.prepareStatement(
             "insert into " + TABLE_SHEET + " (id, created_at, author, type, text, link, token) " +
                 "values (?, ?, ?, ?, ?, ?, ?)"
@@ -66,14 +66,12 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
     private fun getSheetsResult(rs: ResultSet): ArrayList<Sheet>? {
         val sheetList = ArrayList<Sheet>()
         while (rs.next()) {
-            val typeString = rs.getString("type")
-            val type = SheetType.valueOf(typeString)
             sheetList.add(
                 Sheet(
                     id = rs.getString("id"),
                     createdAt = rs.getLong("created_at"),
                     author = rs.getString("author"),
-                    type = type,
+                    type = rs.getString("type"),
                     text = rs.getString("text"),
                     link = rs.getString("link"),
                     token = rs.getString("token")

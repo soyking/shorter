@@ -31,7 +31,7 @@ class MyBatisStorageDAOImpl(configPath: String) : StorageDAO {
         }
     }
 
-    override fun createSheet(params: Map<String, Any>) {
+    override fun createSheet(params: Map<String, Any?>) {
         val session = sqlSessionFactory.openSession()
         session.use { session ->
             val authorMapper = session.getMapper(StorageDAO::class.java)
