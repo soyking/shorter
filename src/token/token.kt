@@ -73,13 +73,17 @@ class TokenService(key: String, val initVector: String,
 
     // return true when not exceed max number of sheets
     fun checkTokenInfo(tokenInfo: TokenInfo): Boolean {
+        // invalid condition: today's token and count exceeds
+        // so yesterday's invalid token could be used in today
         return (!(isCreatedInToday(tokenInfo.createdAt) && tokenInfo.count >= maxSheets))
     }
 
     fun regenTokenInfo(tokenInfo: TokenInfo): String? {
         if (isCreatedInToday(tokenInfo.createdAt)) {
+            // today sheets count
             tokenInfo.count += 1
         } else {
+            // new count for new day
             tokenInfo.count = 0
         }
         tokenInfo.createdAt = System.currentTimeMillis()
@@ -90,8 +94,7 @@ class TokenService(key: String, val initVector: String,
 var tokenService: TokenService? = null
 
 fun init(key: String, initVector: String, _maxSheets: Any?) {
-    val maxSheets = _maxSheets as? Int ?: 3
-    println(maxSheets)
+    val maxSheets = (_maxSheets as? String)?.toInt() ?: 3
 
     tokenService = TokenService(
         key = key,
