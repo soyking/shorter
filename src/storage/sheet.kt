@@ -11,7 +11,7 @@ class Sheet(
     var type: String? = null,
     var text: String? = null,
     var link: String? = null,
-    var token: String? = null
+    @Transient var token: String? = null
 )
 
 interface SheetDAO {
