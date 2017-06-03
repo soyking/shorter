@@ -89,17 +89,21 @@ abstract class AbstractStorageDAOImplTest {
 }
 
 open class MySQLStorageDAOImplTest : AbstractStorageDAOImplTest() {
+    companion object {
+        fun cleanDB(): StorageDAO {
+            val _impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
+            for (tb in arrayOf(_impl.TABLE_SHEET, _impl.TABLE_AUTHOR)) {
+                val stmt = _impl.connection.createStatement()
+                val query = "delete from " + tb
+                stmt.executeUpdate(query)
+            }
+            return _impl
+        }
+    }
 
     @Before
     override fun connect() {
-        val _impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
-        for (tb in arrayOf(_impl.TABLE_SHEET, _impl.TABLE_AUTHOR)) {
-            val stmt = _impl.connection.createStatement()
-            val query = "delete from " + tb
-            stmt.executeUpdate(query)
-        }
-
-        impl = _impl
+        impl = cleanDB()
     }
 }
 
