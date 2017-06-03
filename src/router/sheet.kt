@@ -10,8 +10,8 @@ import storage.storageDAO
 import token.tokenService
 
 fun createSheet(req: Request): Any? {
-    val token = req.headers("X-Token") ?: throw APIException("without token")
-    val tokenInfo = tokenService?.extract(token) ?: throw APIException("invalid token")
+    val token = req.headers("X-Token") ?: throw WithoutTokenErr
+    val tokenInfo = tokenService?.extract(token) ?: throw InvalidTokenErr
     if (tokenService?.checkTokenInfo(tokenInfo) == false) {
         throw ExceedMaxSheetsLimitErr
     }
@@ -52,7 +52,6 @@ fun createSheet(req: Request): Any? {
     }
 
     tokenInfo.createdAt = System.currentTimeMillis()
-    tokenInfo.count += 1
     return tokenService?.regenTokenInfo(tokenInfo)
 }
 

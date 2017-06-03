@@ -9,7 +9,7 @@ import spark.Spark.*
 import java.util.*
 
 
-val gson = GsonBuilder().disableHtmlEscaping().create();
+val gson = GsonBuilder().disableHtmlEscaping().create()
 val jsonTransformer = ResponseTransformer { model ->
     gson.toJson(model)
 }

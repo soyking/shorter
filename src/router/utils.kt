@@ -21,6 +21,8 @@ fun getUUID(): String {
 }
 
 val DuplicateAuthorErr = APIException("duplicate author name")
+val WithoutTokenErr = APIException("without token")
+val InvalidTokenErr = APIException("invalid token")
 val ExceedMaxSheetsLimitErr = APIException("exceed max sheets limit")
 val EmptyTextErr = APIException("empty text")
 val WithoutLinkErr = APIException("without link")

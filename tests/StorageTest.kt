@@ -45,7 +45,6 @@ abstract class AbstractStorageDAOImplTest {
         assert(author!!.name == authorName)
         assert(author.key == authorKey)
         assert(author.secret == authorSecret)
-        println(author.initVector)
         assert(author.initVector == authorInitVector)
     }
 
