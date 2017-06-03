@@ -30,7 +30,7 @@ fun createSheet(req: Request): Any? {
 
     sheet.id = getUUID()
     sheet.createdAt = System.currentTimeMillis()
-    sheet.author = tokenInfo.author.id
+    sheet.author = tokenInfo.author.name
     sheet.token = token.trimEnd('=')
 
     try {

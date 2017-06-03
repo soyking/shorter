@@ -35,7 +35,6 @@ class CipherTest {
         )
 
         val author = Author(
-            id = "id",
             name = "test_name",
             createdAt = System.currentTimeMillis(),
             key = key,
@@ -48,7 +47,7 @@ class CipherTest {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
-            override fun getAuthor(id: String): Author? {
+            override fun getAuthor(name: String): Author? {
                 return author
             }
 

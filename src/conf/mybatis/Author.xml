@@ -4,18 +4,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="storage.StorageDAO">
     <insert id="createAuthor" parameterType="map">
-        insert into author (id, name, created_at, `key`, secret, init_vector) values (
-        #{id}, #{name}, #{created_at}, #{key}, #{secret}, #{init_vector})
+        insert into author (name, created_at, `key`, secret, init_vector) values (
+        #{name}, #{created_at}, #{key}, #{secret}, #{init_vector})
     </insert>
     <select id="getAuthor" parameterType="string" resultType="storage.Author">
         select
-        id as id,
         name as name,
         created_at as createdAt,
         `key` as `key`,
         secret as secret,
         init_vector as initVector
         from author
-        where id = #{id}
+        where name = #{name}
     </select>
 </mapper>

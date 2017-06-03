@@ -22,11 +22,11 @@ class MyBatisStorageDAOImpl(configPath: String) : StorageDAO {
         }
     }
 
-    override fun getAuthor(id: String): Author? {
+    override fun getAuthor(name: String): Author? {
         val session = sqlSessionFactory.openSession()
         session.use { session ->
             val authorMapper = session.getMapper(StorageDAO::class.java)
-            val author = authorMapper.getAuthor(id)
+            val author = authorMapper.getAuthor(name)
             return author
         }
     }

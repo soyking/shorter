@@ -13,30 +13,28 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
 
     override fun createAuthor(params: Map<String, Any?>) {
         val pstmt = connection.prepareStatement(
-            "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`, secret, init_vector) " +
-                "values (?, ?, ?, ?, ?, ?)"
+            "insert into " + TABLE_AUTHOR + " (name, created_at, `key`, secret, init_vector) " +
+                "values (?, ?, ?, ?, ?)"
         )
-        pstmt.setString(1, params["id"] as String)
-        pstmt.setString(2, params["name"] as String)
-        pstmt.setLong(3, params["created_at"] as Long)
-        pstmt.setString(4, params["key"] as String)
-        pstmt.setString(5, params["secret"] as String)
-        pstmt.setString(6, params["init_vector"] as String)
+        pstmt.setString(1, params["name"] as String)
+        pstmt.setLong(2, params["created_at"] as Long)
+        pstmt.setString(3, params["key"] as String)
+        pstmt.setString(4, params["secret"] as String)
+        pstmt.setString(5, params["init_vector"] as String)
         pstmt.executeUpdate()
         pstmt.close()
     }
 
-    override fun getAuthor(id: String): Author? {
+    override fun getAuthor(name: String): Author? {
         val pstmt = connection.prepareStatement(
-            "select * from $TABLE_AUTHOR where id=?"
+            "select * from $TABLE_AUTHOR where name=?"
         )
-        pstmt.setString(1, id)
+        pstmt.setString(1, name)
         val rs = pstmt.executeQuery()
 
         var author: Author? = null
         if (rs.next()) {
             author = Author(
-                id = rs.getString("id"),
                 name = rs.getString("name"),
                 createdAt = rs.getLong("created_at"),
                 key = rs.getString("key"),

@@ -23,10 +23,8 @@ abstract class AbstractStorageDAOImplTest {
     abstract fun connect()
 
     fun _createAuthor(): String {
-        val id = getUUID()
         impl!!.createAuthor(
             mapOf(
-                "id" to id,
                 "name" to authorName,
                 "created_at" to System.currentTimeMillis(),
                 "key" to authorKey,
@@ -34,7 +32,7 @@ abstract class AbstractStorageDAOImplTest {
                 "init_vector" to authorInitVector
             )
         )
-        return id
+        return authorName
     }
 
     @Test
@@ -42,8 +40,8 @@ abstract class AbstractStorageDAOImplTest {
         // not exist
         assert(impl!!.getAuthor("not_exist") == null)
 
-        val authorID = _createAuthor()
-        val author = impl!!.getAuthor(authorID)
+        val authorName = _createAuthor()
+        val author = impl!!.getAuthor(authorName)
         assert(author!!.name == authorName)
         assert(author.key == authorKey)
         assert(author.secret == authorSecret)
@@ -51,14 +49,14 @@ abstract class AbstractStorageDAOImplTest {
         assert(author.initVector == authorInitVector)
     }
 
-    fun _createSheet(authorID: String): Pair<String, String> {
+    fun _createSheet(authorName: String): Pair<String, String> {
         val id = getUUID()
         val token = getUUID()
         impl!!.createSheet(
             mapOf(
                 "id" to id,
                 "created_at" to System.currentTimeMillis(),
-                "author" to authorID,
+                "author" to authorName,
                 "type" to sheetType.toString(),
                 "text" to sheetText,
                 "link" to sheetLink,
@@ -73,10 +71,10 @@ abstract class AbstractStorageDAOImplTest {
         assert(impl!!.getSheets(mapOf("id" to "not_exist"))!!.isEmpty())
         assert(impl!!.getSheets(mapOf("token" to "not_exist"))!!.isEmpty())
 
-        val authorID = _createAuthor()
+        val authorName = _createAuthor()
         val sheetList = ArrayList<Pair<String, String>>()
         for (i in 1..10) {
-            sheetList.add(_createSheet(authorID))
+            sheetList.add(_createSheet(authorName))
         }
 
         assert(impl!!.getSheets(mapOf("id" to sheetList.first().first))!!.size == 1)

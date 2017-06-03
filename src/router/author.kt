@@ -10,7 +10,6 @@ import token.tokenService
 
 fun createAuthor(req: Request): Any? {
     val author = gson.fromJson(req.body(), Author::class.java)
-    author.id = getUUID()
     author.createdAt = System.currentTimeMillis()
     author.key = getKey()
     author.secret = getUUID()
@@ -18,7 +17,6 @@ fun createAuthor(req: Request): Any? {
 
     try {
         storageDAO.createAuthor(mapOf(
-            "id" to author.id,
             "name" to author.name,
             "created_at" to author.createdAt,
             "key" to author.key,

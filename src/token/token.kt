@@ -26,7 +26,7 @@ class TokenService(key: String, val initVector: String,
         )
         val token = firstClassCipher.encrypt(
             assembler.combine(listOf(
-                author.id,
+                author.name,
                 subToken
             ))
         )
