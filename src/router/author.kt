@@ -25,7 +25,7 @@ fun createAuthor(req: Request): Any? {
         ))
     } catch (e: PersistenceException) {
         if (e.cause is MySQLIntegrityConstraintViolationException) {
-            throw APIException("duplicate author name")
+            throw DuplicateAuthorErr
         } else {
             throw e
         }

@@ -13,18 +13,18 @@ fun createSheet(req: Request): Any? {
     val token = req.headers("X-Token") ?: throw APIException("without token")
     val tokenInfo = tokenService?.extract(token) ?: throw APIException("invalid token")
     if (tokenService?.checkTokenInfo(tokenInfo) == false) {
-        throw APIException("exceed max sheets limit")
+        throw ExceedMaxSheetsLimitErr
     }
 
     val sheet = gson.fromJson(req.body(), Sheet::class.java)
-    sheet.text ?: throw APIException("empty text")
+    sheet.text ?: throw EmptyTextErr
     try {
         val type = SheetType.valueOf(sheet.type!!)
         if (type == SheetType.LINK && sheet.link == null) {
-            throw APIException("without link")
+            throw WithoutLinkErr
         }
     } catch (e: java.lang.IllegalArgumentException) {
-        throw APIException("invalid sheet type")
+        throw InvalidSheetTypeErr
     }
 
 
@@ -45,7 +45,7 @@ fun createSheet(req: Request): Any? {
         ))
     } catch (e: PersistenceException) {
         if (e.cause is MySQLIntegrityConstraintViolationException) {
-            throw APIException("token has been used")
+            throw ReuseTokenErr
         } else {
             throw e
         }

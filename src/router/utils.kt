@@ -19,3 +19,10 @@ fun getKey(): String {
 fun getUUID(): String {
     return UUID.randomUUID().toString()
 }
+
+val DuplicateAuthorErr = APIException("duplicate author name")
+val ExceedMaxSheetsLimitErr = APIException("exceed max sheets limit")
+val EmptyTextErr = APIException("empty text")
+val WithoutLinkErr = APIException("without link")
+val InvalidSheetTypeErr = APIException("invalid sheet type")
+val ReuseTokenErr = APIException("token has been used")
