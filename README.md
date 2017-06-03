@@ -1,4 +1,4 @@
-Make Thoughts Shorter
+Shorter
 ===
 
 Written by [kotlin](https://kotlinlang.org/), based on [spark](http://sparkjava.com/), [mybatis](http://www.mybatis.org/mybatis-3/)
@@ -11,9 +11,9 @@ _Given up, Just for fun_
 
 1. Create `conf/app.conf`, example in `conf/app.default.conf`
 
-1. Run `gradle run`
+1. Run `./gradlew run`
 
-1. Test `gradle test`
+1. Test `./gradlew test`
 
 ### API
 
