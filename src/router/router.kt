@@ -1,12 +1,12 @@
 package router
 
 import com.google.gson.GsonBuilder
-import props
 import spark.Request
 import spark.ResponseTransformer
 import spark.Route
 import spark.Service
 import spark.Spark.*
+import java.util.*
 
 
 val gson = GsonBuilder().disableHtmlEscaping().create();
@@ -14,7 +14,7 @@ val jsonTransformer = ResponseTransformer { model ->
     gson.toJson(model)
 }
 
-fun init() {
+fun init(props:Properties) {
     port(props.getProperty("port", Service.SPARK_DEFAULT_PORT.toString()).toInt())
     token.init(props.getProperty("key"), props.getProperty("init_vector"), props["max_sheets"])
     path("/api") {
