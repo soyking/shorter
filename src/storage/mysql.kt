@@ -13,14 +13,15 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
 
     override fun createAuthor(params: Map<String, Any?>) {
         val pstmt = connection.prepareStatement(
-            "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`, secret) " +
-                "values (?, ?, ?, ?, ?)"
+            "insert into " + TABLE_AUTHOR + " (id, name, created_at, `key`, secret, init_vector) " +
+                "values (?, ?, ?, ?, ?, ?)"
         )
         pstmt.setString(1, params["id"] as String)
         pstmt.setString(2, params["name"] as String)
         pstmt.setLong(3, params["created_at"] as Long)
         pstmt.setString(4, params["key"] as String)
         pstmt.setString(5, params["secret"] as String)
+        pstmt.setString(6, params["init_vector"] as String)
         pstmt.executeUpdate()
         pstmt.close()
     }
@@ -39,7 +40,8 @@ class MySQLStorageDAOImpl(val url: String, val username: String, val password: S
                 name = rs.getString("name"),
                 createdAt = rs.getLong("created_at"),
                 key = rs.getString("key"),
-                secret = rs.getString("secret")
+                secret = rs.getString("secret"),
+                initVector = rs.getString("init_vector")
             )
         }
 

@@ -1,4 +1,3 @@
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import router.getUUID
@@ -15,13 +14,13 @@ abstract class AbstractStorageDAOImplTest {
     val authorName = "authorName"
     val authorKey = randomString(16)
     val authorSecret = "authorSecret"
+    val authorInitVector = randomString(16)
 
     val sheetType = SheetType.TEXT
     val sheetText = "sheetText"
     val sheetLink = "sheetLink"
 
     abstract fun connect()
-    abstract fun clear()
 
     fun _createAuthor(): String {
         val id = getUUID()
@@ -31,7 +30,8 @@ abstract class AbstractStorageDAOImplTest {
                 "name" to authorName,
                 "created_at" to System.currentTimeMillis(),
                 "key" to authorKey,
-                "secret" to authorSecret
+                "secret" to authorSecret,
+                "init_vector" to authorInitVector
             )
         )
         return id
@@ -47,6 +47,8 @@ abstract class AbstractStorageDAOImplTest {
         assert(author!!.name == authorName)
         assert(author.key == authorKey)
         assert(author.secret == authorSecret)
+        println(author.initVector)
+        assert(author.initVector == authorInitVector)
     }
 
     fun _createSheet(authorID: String): Pair<String, String> {
@@ -89,21 +91,17 @@ abstract class AbstractStorageDAOImplTest {
 }
 
 open class MySQLStorageDAOImplTest : AbstractStorageDAOImplTest() {
-    var _impl: MySQLStorageDAOImpl? = null
 
     @Before
     override fun connect() {
-        _impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
-        impl = _impl
-    }
-
-    @After
-    override fun clear() {
-        for (tb in arrayOf(_impl!!.TABLE_SHEET, _impl!!.TABLE_AUTHOR)) {
-            val stmt = _impl!!.connection.createStatement()
+        val _impl = MySQLStorageDAOImpl("jdbc:mysql://127.0.0.1:3306/shorter", "shorter", "shorter")
+        for (tb in arrayOf(_impl.TABLE_SHEET, _impl.TABLE_AUTHOR)) {
+            val stmt = _impl.connection.createStatement()
             val query = "delete from " + tb
             stmt.executeUpdate(query)
         }
+
+        impl = _impl
     }
 }
 
