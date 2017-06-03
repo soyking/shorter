@@ -11,6 +11,7 @@ import token.TokenService
 class CipherTest {
     val key = "Bar12345Bar12345"
     val initVector = "RandomInitVector"
+    val authorInitVector = "DanromInitVector"
 
     @Test
     fun CipherTest() {
@@ -38,7 +39,8 @@ class CipherTest {
             name = "test_name",
             createdAt = System.currentTimeMillis(),
             key = key,
-            secret = "secrect_key"
+            secret = "secrect_key",
+            initVector = authorInitVector
         )
         // dirty patch
         storageDAO = object : StorageDAO {

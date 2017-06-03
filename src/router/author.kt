@@ -14,6 +14,7 @@ fun createAuthor(req: Request): Any? {
     author.createdAt = System.currentTimeMillis()
     author.key = getKey()
     author.secret = getUUID()
+    author.initVector = getKey()
 
     try {
         storageDAO.createAuthor(mapOf(
@@ -21,7 +22,8 @@ fun createAuthor(req: Request): Any? {
             "name" to author.name,
             "created_at" to author.createdAt,
             "key" to author.key,
-            "secret" to author.secret
+            "secret" to author.secret,
+            "init_vector" to author.initVector
         ))
     } catch (e: PersistenceException) {
         if (e.cause is MySQLIntegrityConstraintViolationException) {

@@ -1,7 +1,7 @@
 import org.junit.Before
 import org.junit.Test
+import router.getKey
 import router.getUUID
-import router.randomString
 import storage.MyBatisStorageDAOImpl
 import storage.MySQLStorageDAOImpl
 import storage.SheetType
@@ -12,9 +12,9 @@ abstract class AbstractStorageDAOImplTest {
     var impl: StorageDAO? = null
 
     val authorName = "authorName"
-    val authorKey = randomString(16)
+    val authorKey = getKey()
     val authorSecret = "authorSecret"
-    val authorInitVector = randomString(16)
+    val authorInitVector = getKey()
 
     val sheetType = SheetType.TEXT
     val sheetText = "sheetText"

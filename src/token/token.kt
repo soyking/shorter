@@ -15,7 +15,7 @@ class TokenService(key: String, val initVector: String,
 
     fun generate(tokenInfo: TokenInfo): String? {
         val author = tokenInfo.author
-        val secondClassCipher = cipherFactory.create(author.key!!, initVector)
+        val secondClassCipher = cipherFactory.create(author.key!!, author.initVector!!)
 
         val subToken = secondClassCipher.encrypt(
             assembler.combine(listOf(
@@ -44,7 +44,7 @@ class TokenService(key: String, val initVector: String,
         val subToken = parts[1]
 
         val author = storageDAO.getAuthor(authorID) ?: return null
-        val secondClassCipher = cipherFactory.create(author.key!!, initVector)
+        val secondClassCipher = cipherFactory.create(author.key!!, author.initVector!!)
 
         val subParts = assembler.extract(secondClassCipher.decrypt(subToken))
         if (subParts == null || subParts.size != SECOND_CLASS_CONTENT_LENGTH) {
